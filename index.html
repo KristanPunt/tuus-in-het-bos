@@ -217,8 +217,8 @@ const IMGS={"1": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAwICQs
 const PRICE_PER_NIGHT=150;   // overige periodes, per nacht (AANNAME: controleer)
 const DIRECT_DISCOUNT=0.05;    // korting over het totaal bij boeken via deze site
 const PRICE_SINGLE_NIGHT=165;   // losse nacht
-const PRICE_SHORT_WEEKEND=395;  // 2 nachten, aankomst vrijdag (vr en za)
-const PRICE_WEEKEND=500;        // 3 nachten, aankomst vrijdag (vr, za en zo)
+const PRICE_SHORT_WEEKEND=395;  // kort weekend: aankomst vrijdag, vertrek zondag (2 nachten)
+const PRICE_WEEKEND=500;        // lang weekend: aankomst vrijdag, vertrek maandagochtend (3 nachten)
 const CLEANING_FEE=130;      // eindschoonmaak, vast bedrag per verblijf
 const PET_PER_NIGHT=7.5;     // per hond per nacht (AANNAME uit boeking van 15 euro voor 2 nachten: controleer)
 const BED_LINEN_PP=7.5;      // bedlinnen per persoon (AANNAME: 45 euro bij 6 gasten: controleer)
@@ -276,10 +276,11 @@ fetch("availability.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j
 function calc(n){
   const g=+$("g").value||1,dg=+$("d").value||0,r=x=>Math.round(x*100)/100;
   const fri=new Date($("in").value+"T00:00:00Z").getUTCDay()===5;
-  const L=[n===1?["Losse nacht",PRICE_SINGLE_NIGHT]:n===2&&fri?["Kort weekend (vrijdag en zaterdag, 2 nachten)",PRICE_SHORT_WEEKEND]:n===3&&fri?["Weekend (vrijdag, zaterdag en zondag, 3 nachten)",PRICE_WEEKEND]:[`${eur2(PRICE_PER_NIGHT)} x ${n} nachten`,PRICE_PER_NIGHT*n]];
+  const L=[n===1?["Losse nacht",PRICE_SINGLE_NIGHT]:n===2&&fri?["Kort weekend (vrijdag t/m zondag, 2 nachten)",PRICE_SHORT_WEEKEND]:n===3&&fri?["Lang weekend (vrijdag t/m maandag, 3 nachten)",PRICE_WEEKEND]:[`${eur2(PRICE_PER_NIGHT)} x ${n} nachten`,PRICE_PER_NIGHT*n]];
   if(dg)L.push([`Huisdier${dg>1?"en":""} (${dg} x ${n} ${n>1?"nachten":"nacht"})`,PET_PER_NIGHT*dg*n]);
   L.push(["Eindschoonmaak",CLEANING_FEE],[`Bedlinnen (${g} ${g>1?"personen":"persoon"})`,BED_LINEN_PP*g],[`Badlinnen (${g} ${g>1?"personen":"persoon"})`,BATH_LINEN_PP*g],[`Toeristenbelasting (${g} x ${n} ${n>1?"nachten":"nacht"})`,TOURIST_TAX_PPPN*g*n]);
-  L.push([`Korting direct boeken (${Math.round(DIRECT_DISCOUNT*100)}% over het totaal)`,-DIRECT_DISCOUNT*L.reduce((s,l)=>s+l[1],0)]);
+  L.push(["Subtotaal",L.reduce((s,l)=>s+l[1],0)]);
+  L.push([`Korting direct boeken (${Math.round(DIRECT_DISCOUNT*100)}% over het totaal)`,-DIRECT_DISCOUNT*L[L.length-1][1]]);
   const lines=L.map(([t,v])=>[t,r(v)]);return{lines,total:r(lines.reduce((s,l)=>s+l[1],0))};
 }
 function upd(){
