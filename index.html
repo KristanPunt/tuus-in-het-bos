@@ -50,14 +50,14 @@ section{margin-bottom:clamp(40px,6vw,72px)}
 blockquote{margin:0 0 20px;padding:0 0 0 18px;border-left:3px solid var(--sage);max-width:62ch}
 blockquote footer{position:static;color:var(--mute);font-size:.9rem;padding:0;display:block}
 .rate{font-family:"Young Serif",Georgia,serif;font-size:2.4rem}
-aside{align-self:start;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;border-radius:16px}
-.book{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+aside{align-self:start;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border-radius:16px}
+.book{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
 .book h2{font-size:1.5rem;margin-bottom:.2em}
 .price{color:var(--mute);margin-bottom:14px;font-size:.95rem}
 .price b{color:var(--ink);font-size:1.4rem}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.row>div{min-width:0}
 label{display:block;font-size:.85rem;font-weight:700;margin:12px 0 4px}
-input,select,textarea{width:100%;font:inherit;padding:.6em .7em;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+input,select,textarea{width:100%;min-width:0;max-width:100%;font:inherit;padding:.6em .7em;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
 textarea{min-height:70px;resize:vertical}
 .sum{margin:16px 0;border-top:1px solid var(--line);padding-top:12px;font-size:.95rem}
 .sum div{display:flex;justify-content:space-between;padding:2px 0}
