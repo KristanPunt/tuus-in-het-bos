@@ -312,21 +312,41 @@ function bark(){
   try{
     _ac=_ac||new (window.AudioContext||window.webkitAudioContext)();
     const ac=_ac;if(ac.state==="suspended")ac.resume();
-    const woof=(t0,f0,len)=>{
-      const o=ac.createOscillator(),o2=ac.createOscillator(),g=ac.createGain(),f=ac.createBiquadFilter(),f2=ac.createBiquadFilter();
-      o.type="sawtooth";o2.type="square";
-      o.frequency.setValueAtTime(f0*1.5,t0);o.frequency.exponentialRampToValueAtTime(f0*0.6,t0+len);
-      o2.frequency.setValueAtTime(f0*0.75,t0);o2.frequency.exponentialRampToValueAtTime(f0*0.3,t0+len);
-      f.type="bandpass";f.Q.value=3;f.frequency.setValueAtTime(900,t0);f.frequency.exponentialRampToValueAtTime(500,t0+len);
-      f2.type="lowpass";f2.frequency.value=2500;
-      g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(0.7,t0+0.015);g.gain.exponentialRampToValueAtTime(0.0001,t0+len);
-      const nb=ac.createBuffer(1,ac.sampleRate*len,ac.sampleRate),d=nb.getChannelData(0);
-      for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
-      const ns=ac.createBufferSource(),ng=ac.createGain();ns.buffer=nb;ng.gain.value=0.25;
-      o.connect(f);o2.connect(f);ns.connect(ng);ng.connect(f);f.connect(f2);f2.connect(g);g.connect(ac.destination);
-      o.start(t0);o2.start(t0);ns.start(t0);o.stop(t0+len);o2.stop(t0+len);ns.stop(t0+len);
+    const sr=ac.sampleRate;
+    const curve=new Float32Array(1024);for(let i=0;i<1024;i++){const x=i/512-1;curve[i]=Math.tanh(3*x)}
+    const woof=(t0,base,len,vol)=>{
+      // stembron: ruwe pulstrein (zaagtand) met pitch-sprong omhoog en daarna omlaag, plus trillende toonhoogte (ruwheid)
+      const o=ac.createOscillator(),lfo=ac.createOscillator(),lg=ac.createGain();
+      o.type="sawtooth";
+      o.frequency.setValueAtTime(base*0.8,t0);
+      o.frequency.exponentialRampToValueAtTime(base*1.35,t0+0.03);
+      o.frequency.exponentialRampToValueAtTime(base*0.6,t0+len);
+      lfo.frequency.value=70;lg.gain.value=base*0.12;lfo.connect(lg);lg.connect(o.frequency);
+      // klinkers: "o" -> "a" -> "oe" (de klank van "woef")
+      const f1=ac.createBiquadFilter(),f2=ac.createBiquadFilter(),f3=ac.createBiquadFilter();
+      [f1,f2,f3].forEach(f=>{f.type="bandpass"});
+      f1.Q.value=5;f2.Q.value=6;f3.Q.value=8;
+      f1.frequency.setValueAtTime(450,t0);f1.frequency.linearRampToValueAtTime(750,t0+0.05);f1.frequency.linearRampToValueAtTime(420,t0+len);
+      f2.frequency.setValueAtTime(900,t0);f2.frequency.linearRampToValueAtTime(1250,t0+0.05);f2.frequency.linearRampToValueAtTime(800,t0+len);
+      f3.frequency.value=2600;
+      const mix=ac.createGain(),g1=ac.createGain(),g2=ac.createGain(),g3=ac.createGain();
+      g1.gain.value=1;g2.gain.value=0.8;g3.gain.value=0.25;
+      o.connect(f1);o.connect(f2);o.connect(f3);f1.connect(g1);f2.connect(g2);f3.connect(g3);g1.connect(mix);g2.connect(mix);g3.connect(mix);
+      // ruis voor de aanzet (de "w/h" van het blaffen) en voor de schorheid
+      const nb=ac.createBuffer(1,Math.floor(sr*len),sr),d=nb.getChannelData(0);
+      for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(sr*0.05));
+      const ns=ac.createBufferSource(),nf=ac.createBiquadFilter(),ng=ac.createGain();
+      ns.buffer=nb;nf.type="bandpass";nf.frequency.value=1500;nf.Q.value=0.8;ng.gain.value=0.9;
+      ns.connect(nf);nf.connect(ng);ng.connect(mix);
+      const sh=ac.createWaveShaper();sh.curve=curve;
+      const g=ac.createGain();
+      g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol,t0+0.012);
+      g.gain.setValueAtTime(vol,t0+0.04);g.gain.exponentialRampToValueAtTime(0.0001,t0+len);
+      mix.connect(sh);sh.connect(g);g.connect(ac.destination);
+      o.start(t0);lfo.start(t0);ns.start(t0);o.stop(t0+len);lfo.stop(t0+len);ns.stop(t0+len);
     };
-    const t=ac.currentTime+0.02;woof(t,230,0.16);woof(t+0.26,200,0.2);
+    const t=ac.currentTime+0.03;
+    woof(t,250,0.17,0.55);woof(t+0.30,235,0.19,0.5);
   }catch(e){}
 }
 document.querySelectorAll(".logo,.flogo").forEach(el=>{el.style.cursor="pointer";el.addEventListener("click",bark)});
