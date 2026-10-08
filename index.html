@@ -200,6 +200,7 @@ details{margin-top:10px}summary{cursor:pointer;font-size:.9rem;color:var(--mute)
   <div class="book ok" id="ok" tabindex="-1">
     <h2>Bijna klaar</h2>
     <p id="oktext"></p>
+    <p class="note">Je betaalt nog niets en je boeking is nog niet definitief.</p>
     <button class="btn" type="button" id="again">Nieuwe aanvraag</button>
   </div>
 </aside>
@@ -278,7 +279,7 @@ $("go").onclick=()=>{
   err.textContent="";
   const tot=PRICE_PER_NIGHT*n+CLEANING_FEE;
   const body=`Boekingsaanvraag Tuus in het bos\nNaam: ${name}\nE-mail: ${mail}\nTelefoon: ${$("t").value}\nAankomst: ${fmt($("in").value)}\nVertrek: ${fmt($("out").value)} (${n} nachten)\nGasten: ${$("g").value}, honden: ${$("d").value}\nTotaal: ${eur(tot)}\nOpmerking: ${$("m").value}`;
-  if(OWNER_EMAIL){location.href="mailto:"+OWNER_EMAIL+"?subject="+encodeURIComponent("Boekingsaanvraag Tuus in het bos")+"&body="+encodeURIComponent(body);$("oktext").textContent="Je e-mailprogramma is geopend met je aanvraag. Verstuur die mail om de aanvraag te voltooien."}
+  if(OWNER_EMAIL){location.href="mailto:"+OWNER_EMAIL+"?subject="+encodeURIComponent("Boekingsaanvraag Tuus in het bos")+"&body="+encodeURIComponent(body);$("oktext").textContent="Je e-mailprogramma is geopend met je aanvraag. Verstuur die mail om je aanvraag door te geven. Je boeking is pas definitief nadat de eigenaar hem per e-mail heeft bevestigd."}
   else{$("oktext").textContent="Er is nog geen e-mailadres ingesteld. Kopieer deze tekst en stuur hem naar de eigenaar:\n\n"+body;$("oktext").style.whiteSpace="pre-wrap"}
   $("bookbox").style.display="none";$("ok").style.display="block";$("ok").focus();
 };
