@@ -281,7 +281,7 @@ function calc(n){
   L.push(["Eindschoonmaak",CLEANING_FEE],[`Bedlinnen (${g} ${g>1?"personen":"persoon"})`,BED_LINEN_PP*g],[`Badlinnen (${g} ${g>1?"personen":"persoon"})`,BATH_LINEN_PP*g],[`Toeristenbelasting (${g} x ${n} ${n>1?"nachten":"nacht"})`,TOURIST_TAX_PPPN*g*n]);
   L.push(["Subtotaal",L.reduce((s,l)=>s+l[1],0)]);
   L.push([`Korting direct boeken (${Math.round(DIRECT_DISCOUNT*100)}% over het totaal)`,-DIRECT_DISCOUNT*L[L.length-1][1]]);
-  const lines=L.map(([t,v])=>[t,r(v)]);return{lines,total:r(lines.reduce((s,l)=>s+l[1],0))};
+  const lines=L.map(([t,v])=>[t,r(v)]);return{lines,total:r(lines[lines.length-2][1]+lines[lines.length-1][1])};
 }
 function upd(){
   if($("in").value){const nx=new Date(new Date($("in").value).getTime()+864e5);$("out").min=iso(nx);if($("out").value&&$("out").value<=$("in").value)$("out").value=""}
