@@ -305,6 +305,31 @@ $("go").onclick=()=>{
   $("bookbox").style.display="none";$("ok").style.display="block";$("ok").focus();
 };
 $("again").onclick=()=>{$("ok").style.display="none";$("bookbox").style.display="block"};
+
+// Hondengeblaf bij klik op het logo (gesynthetiseerd, geen geluidsbestand nodig)
+let _ac;
+function bark(){
+  try{
+    _ac=_ac||new (window.AudioContext||window.webkitAudioContext)();
+    const ac=_ac;if(ac.state==="suspended")ac.resume();
+    const woof=(t0,f0,len)=>{
+      const o=ac.createOscillator(),o2=ac.createOscillator(),g=ac.createGain(),f=ac.createBiquadFilter(),f2=ac.createBiquadFilter();
+      o.type="sawtooth";o2.type="square";
+      o.frequency.setValueAtTime(f0*1.5,t0);o.frequency.exponentialRampToValueAtTime(f0*0.6,t0+len);
+      o2.frequency.setValueAtTime(f0*0.75,t0);o2.frequency.exponentialRampToValueAtTime(f0*0.3,t0+len);
+      f.type="bandpass";f.Q.value=3;f.frequency.setValueAtTime(900,t0);f.frequency.exponentialRampToValueAtTime(500,t0+len);
+      f2.type="lowpass";f2.frequency.value=2500;
+      g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(0.7,t0+0.015);g.gain.exponentialRampToValueAtTime(0.0001,t0+len);
+      const nb=ac.createBuffer(1,ac.sampleRate*len,ac.sampleRate),d=nb.getChannelData(0);
+      for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
+      const ns=ac.createBufferSource(),ng=ac.createGain();ns.buffer=nb;ng.gain.value=0.25;
+      o.connect(f);o2.connect(f);ns.connect(ng);ng.connect(f);f.connect(f2);f2.connect(g);g.connect(ac.destination);
+      o.start(t0);o2.start(t0);ns.start(t0);o.stop(t0+len);o2.stop(t0+len);ns.stop(t0+len);
+    };
+    const t=ac.currentTime+0.02;woof(t,230,0.16);woof(t+0.26,200,0.2);
+  }catch(e){}
+}
+document.querySelectorAll(".logo,.flogo").forEach(el=>{el.style.cursor="pointer";el.addEventListener("click",bark)});
 </script>
 </body>
 </html>
