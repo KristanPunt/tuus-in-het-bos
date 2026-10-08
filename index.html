@@ -271,8 +271,8 @@ function pick(k){const a=$("in").value,b=$("out").value;msg("");
   else if(!free(a,k)){msg("In deze periode zitten bezette data. Kies andere data.");$("in").value=bset.has(k)?"":k;$("out").value=""}
   else $("out").value=k;
   upd();drawCal()}
-$("calnote").textContent="Doorgestreepte data zijn bezet. Stand van de agenda: "+BLOCKED_UPDATED+".";
-fetch("availability.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&Array.isArray(j.blocked)){setBlocked(j.blocked);if(j.updated)$("calnote").textContent="Doorgestreepte data zijn bezet. Stand van de agenda: "+new Date(j.updated).toLocaleString("nl-NL",{day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})+".";drawCal();upd()}}).catch(()=>{});
+$("calnote").textContent="Doorgestreepte data zijn bezet. Minimaal 2 nachten boeken. Stand van de agenda: "+BLOCKED_UPDATED+".";
+fetch("availability.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&Array.isArray(j.blocked)){setBlocked(j.blocked);if(j.updated)$("calnote").textContent="Doorgestreepte data zijn bezet. Minimaal 2 nachten boeken. Stand van de agenda: "+new Date(j.updated).toLocaleString("nl-NL",{day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})+".";drawCal();upd()}}).catch(()=>{});
 function calc(n){
   const g=+$("g").value||1,dg=+$("d").value||0,r=x=>Math.round(x*100)/100;
   const fri=new Date($("in").value+"T00:00:00Z").getUTCDay()===5;
@@ -286,6 +286,7 @@ function calc(n){
 function upd(){
   if($("in").value){const nx=new Date(new Date($("in").value).getTime()+864e5);$("out").min=iso(nx);if($("out").value&&$("out").value<=$("in").value)$("out").value=""}
   if($("in").value&&$("out").value&&!free($("in").value,$("out").value)){msg("In deze periode zitten bezette data. Kies andere data.");$("out").value=""}
+  if(nights()===1){msg("Minimaal 2 nachten boeken. Kies een latere vertrekdatum.");$("out").value=""}
   const n=nights();$("contact").hidden=n<1;$("go").textContent=n>0?"Aanvraag per e-mail":"Kies eerst je data";
   const c=n>0?calc(n):null;
   $("sum").innerHTML=c?c.lines.map(([t,v])=>`<div><span>${t}</span><span>${eur2(v)}</span></div>`).join("")+`<div class="tot"><span>Totaal</span><span>${eur2(c.total)}</span></div>`:`<div style="color:var(--mute)">Kies je aankomst- en vertrekdatum voor de prijs.</div>`;
