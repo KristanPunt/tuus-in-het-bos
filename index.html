@@ -16,6 +16,7 @@
 :root{--bg:#f2f4ef;--ink:#1b2420;--mute:#56645b;--card:#fff;--line:#d5dcd1;--forest:#1e3329;--sage:#8fa88c;--accent:#a8502f;--accent-ink:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111915;--ink:#e8eee7;--mute:#a3b2a7;--card:#1a251f;--line:#2c3a32;--accent:#d27a55;--accent-ink:#14100d}}
 :root[data-theme="dark"]{--bg:#111915;--ink:#e8eee7;--mute:#a3b2a7;--card:#1a251f;--line:#2c3a32;--accent:#d27a55;--accent-ink:#14100d}
+img[data-img]:not([src]){visibility:hidden}
 html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
 *,*:before,*:after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 "Hanken Grotesk",system-ui,sans-serif}
