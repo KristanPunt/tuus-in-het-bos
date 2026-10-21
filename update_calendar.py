@@ -1,7 +1,7 @@
 """Haalt de agenda's (Airbnb en Natuurhuisje) op en schrijft alleen de bezette nachten
 naar availability.json. De iCal-URL's staan in omgevingsvariabelen (GitHub-geheimen),
 nooit in de code of de website."""
-import json, os, re, sys, urllib.request
+import json, os, re, sys, time, urllib.request
 from datetime import datetime, timezone, date, timedelta
 
 urls = [u for u in (os.environ.get("ICAL_URL"), os.environ.get("ICAL_URL_NATUURHUISJE")) if u]
@@ -12,7 +12,17 @@ def d(v): return date(int(v[:4]), int(v[4:6]), int(v[6:8]))
 ranges = []
 for url in urls:
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    text = urllib.request.urlopen(req, timeout=30).read().decode("utf-8", "replace")
+    text = None
+    for attempt in range(1, 5):  # tot 4 pogingen, met oplopende wachttijd
+        try:
+            text = urllib.request.urlopen(req, timeout=30).read().decode("utf-8", "replace")
+            break
+        except Exception as ex:  # nooit de URL zelf printen (geheim)
+            print(f"Poging {attempt} mislukt: {type(ex).__name__}: {getattr(ex, 'code', '')} {getattr(ex, 'reason', ex)}")
+            if attempt < 4:
+                time.sleep(15 * attempt)
+    if text is None:
+        sys.exit("Agenda kon niet worden opgehaald, availability.json blijft ongewijzigd")
     if "BEGIN:VCALENDAR" not in text:
         sys.exit("Geen geldige agenda ontvangen, bestand niet overschreven")
     text = re.sub(r"\r?\n[ \t]", "", text)
