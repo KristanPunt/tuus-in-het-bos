@@ -203,7 +203,7 @@ details{margin-top:10px}summary{cursor:pointer;font-size:.9rem;color:var(--mute)
     <label for="t">Telefoonnummer</label><input id="t" type="tel" autocomplete="tel" inputmode="tel" required>
     <details><summary>Opmerking toevoegen</summary><label for="m">Opmerking</label><textarea id="m"></textarea></details></div>
     <div class="sum" id="sum"></div>
-    <label class="chk" for="pv_ok"><input type="checkbox" id="pv_ok"> <span>Ik ga akkoord met de <a href="privacy.html" target="_blank" rel="noopener">privacyverklaring</a>. Mijn gegevens worden alleen gebruikt om mijn aanvraag te beantwoorden.</span></label>
+    <label class="chk" for="pv_ok"><input type="checkbox" id="pv_ok"> <span>Ik ga akkoord met de verwerking van deze gegevens om mijn aanvraag te beantwoorden.</span></label>
     <button class="btn" id="go" type="button">Aanvraag per e-mail</button>
     <p class="err" id="err" role="alert"></p>
     <p class="note">Je betaalt nu nog niets en je boeking is nog niet definitief. Je aanvraag gaat per e-mail naar de eigenaar, die hem bevestigt. Gratis annuleren binnen 7 dagen na bevestiging (bij boeking meer dan 28 dagen voor aankomst).</p>
@@ -307,7 +307,7 @@ $("go").onclick=()=>{
   if(n<1)return err.textContent="Kies een aankomst- en vertrekdatum.";
   if(!name)return err.textContent="Vul je naam in.";
   if(!/^\S+@\S+\.\S+$/.test(mail))return err.textContent="Vul een geldig e-mailadres in.";
-  if(!$("pv_ok").checked)return err.textContent="Vink aan dat je akkoord gaat met de privacyverklaring.";
+  if(!$("pv_ok").checked)return err.textContent="Vink aan dat je akkoord gaat met de verwerking van je gegevens.";
   const digits=$("t").value.replace(/\D/g,"");
   if(!/^[+\d\s().-]+$/.test($("t").value.trim())||digits.length<9||digits.length>15)return err.textContent="Vul een geldig telefoonnummer in (minimaal 9 cijfers).";
   err.textContent="";
